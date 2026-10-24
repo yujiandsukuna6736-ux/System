@@ -1,56 +1,4 @@
--- Check Executor
 
-local executor = getexecutorname() or identifyexecutor()
-
-if executor then
-
-    if
-
-            string.find(executor, "Bunni") or 
-
-            string.find(executor, "FluxusZ") or 
-
-            string.find(executor, "Delta") or 
-
-            string.find(executor, "Arceus") or
-
-            string.find(executor, "Xeno") or
-
-            string.find(executor, "Swift") or
-
-            string.find(executor, "Awp") or
-
-            string.find(executor, "Volcano") or
-
-            string.find(executor, "Argon") or
-
-            string.find(executor, "Macsploit") or
-
-            string.find(executor, "Potassium") or
-
-            string.find(executor, "CodeX") or
-
-            string.find(executor, "Velocity") or
-
-            string.find(executor, "Romix")
-
-     then
-
-        print("ok")
-
-    else
-
-        game.Players.LocalPlayer:Kick("Please use Delta Exploit or PC use volcano or Exploit paid!")
-
-    end
-
-end
-
-if not game:IsLoaded() then 
-
-    game.Loaded:Wait() 
-
-end
 -- Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -588,6 +536,35 @@ expButton.MouseButton1Click:Connect(function()
             warn("Không tìm thấy biến 'EXP' trong leaderstats!")
         end
     else
+        warn("Không tìm thấy thư mục 'leaderstats' của người chơi!")
+    end
+end)
+ else
+        warn("Không tìm thấy thư mục 'leaderstats' của người chơi!")
+    end
+end)
+    end
+end)
+
+expButton.MouseButton1Click:Connect(function()
+    local leaderstats = player:FindFirstChild("leaderstats")
+    if leaderstats then
+        local expStat = leaderstats:FindFirstChild("EXP") 
+                     or leaderstats:FindFirstChild("Exp") 
+                     or leaderstats:FindFirstChild("Experience")
+                     or leaderstats:FindFirstChild("Xp")
+                     or leaderstats:FindFirstChild("Cấp")
+        if expStat then
+            expStat.Value = expStat.Value + EXP_AMOUNT
+            print("Đã cộng thêm " + EXP_AMOUNT + " EXP!")
+        else
+            warn("Không tìm thấy biến 'EXP' trong leaderstats!")
+        end
+    else
+        warn("Không tìm thấy thư mục 'leaderstats' của người chơi!")
+    end
+end)
+ else
         warn("Không tìm thấy thư mục 'leaderstats' của người chơi!")
     end
 end)
