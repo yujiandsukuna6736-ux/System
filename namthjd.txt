@@ -1,0 +1,593 @@
+-- Check Executor
+
+local executor = getexecutorname() or identifyexecutor()
+
+if executor then
+
+    if
+
+            string.find(executor, "Bunni") or 
+
+            string.find(executor, "FluxusZ") or 
+
+            string.find(executor, "Delta") or 
+
+            string.find(executor, "Arceus") or
+
+            string.find(executor, "Xeno") or
+
+            string.find(executor, "Swift") or
+
+            string.find(executor, "Awp") or
+
+            string.find(executor, "Volcano") or
+
+            string.find(executor, "Argon") or
+
+            string.find(executor, "Macsploit") or
+
+            string.find(executor, "Potassium") or
+
+            string.find(executor, "CodeX") or
+
+            string.find(executor, "Velocity") or
+
+            string.find(executor, "Romix")
+
+     then
+
+        print("ok")
+
+    else
+
+        game.Players.LocalPlayer:Kick("Please use Delta Exploit or PC use volcano or Exploit paid!")
+
+    end
+
+end
+
+if not game:IsLoaded() then 
+
+    game.Loaded:Wait() 
+
+end
+-- Services
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local SoundService = game:GetService("SoundService")
+local Lighting = game:GetService("Lighting")
+
+local player = Players.LocalPlayer
+local noclipEnabled = false
+local noclipConnection = nil
+local speedEnabled = false
+local jumpEnabled = false
+local antiLagEnabled = false
+local flingEnabled = false
+local flingConnection = nil
+local menuVisible = true
+
+local trackedTarget = nil
+
+-- Cấu hình thông số
+local EXP_AMOUNT = 1000
+local FAST_SPEED = 50
+local HIGH_JUMP = 120
+local NORMAL_SPEED = 16
+local NORMAL_JUMP = 50
+
+-- 1. TẠO GIAO DIỆN ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "SolarAdminMenu"
+screenGui.Parent = player:WaitForChild("PlayerGui")
+screenGui.ResetOnSpawn = false
+
+-- 2. NÚT TRÒN BẬT/TẮT MENU (HÌNH MÈO CHUỐI)
+local toggleBtn = Instance.new("ImageButton")
+toggleBtn.Name = "BananaCatToggle"
+toggleBtn.Size = UDim2.new(0, 55, 0, 55)
+toggleBtn.Position = UDim2.new(0.1, 0, 0.2, 0)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.BackgroundTransparency = 0.2
+toggleBtn.Image = "rbxassetid://13833446974" 
+toggleBtn.Active = true
+toggleBtn.Draggable = true
+toggleBtn.Parent = screenGui
+
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(0.5, 0)
+toggleCorner.Parent = toggleBtn
+
+local toggleStroke = Instance.new("UIStroke")
+toggleStroke.Color = Color3.fromRGB(255, 220, 0)
+toggleStroke.Thickness = 3
+toggleStroke.Parent = toggleBtn
+
+-- 3. KHUNG MENU CHÍNH
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 270, 0, 410)
+mainFrame.Position = UDim2.new(0.5, -135, 0.3, -205)
+mainFrame.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.ClipsDescendants = true
+mainFrame.Parent = screenGui
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 20)
+uiCorner.Parent = mainFrame
+
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Color = Color3.fromRGB(255, 230, 80)
+uiStroke.Thickness = 4
+uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+uiStroke.Parent = mainFrame
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "Title"
+titleLabel.Size = UDim2.new(1, -40, 0, 40)
+titleLabel.Position = UDim2.new(0, 10, 0, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "☀️ SOLAR MENU"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 15
+titleLabel.Font = Enum.Font.SourceSansBold
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.Parent = mainFrame
+
+local closeBtn = Instance.new("TextButton")
+closeBtn.Name = "CloseBtn"
+closeBtn.Size = UDim2.new(0, 25, 0, 25)
+closeBtn.Position = UDim2.new(1, -35, 0, 8)
+closeBtn.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+closeBtn.Text = "✖"
+closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.TextSize = 12
+closeBtn.Font = Enum.Font.SourceSansBold
+closeBtn.Parent = mainFrame
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 6)
+closeCorner.Parent = closeBtn
+
+toggleBtn.MouseButton1Click:Connect(function()
+    menuVisible = not menuVisible
+    mainFrame.Visible = menuVisible
+end)
+
+local scrollFrame = Instance.new("ScrollingFrame")
+scrollFrame.Name = "ScrollFrame"
+scrollFrame.Size = UDim2.new(1, -10, 1, -50)
+scrollFrame.Position = UDim2.new(0, 5, 0, 45)
+scrollFrame.BackgroundTransparency = 1
+scrollFrame.BorderSizePixel = 0
+scrollFrame.ScrollBarThickness = 6
+scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(255, 230, 100)
+scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+scrollFrame.Parent = mainFrame
+
+local listLayout = Instance.new("UIListLayout")
+listLayout.Parent = scrollFrame
+listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.Padding = UDim.new(0, 8)
+
+listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10)
+end)
+
+local function createButton(text, order)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 210, 0, 36)
+    btn.BackgroundColor3 = Color3.fromRGB(220, 80, 0)
+    btn.Text = text
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextSize = 14
+    btn.Font = Enum.Font.SourceSansBold
+    btn.LayoutOrder = order
+    btn.Parent = scrollFrame
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = btn
+    
+    return btn
+end
+
+local noclipButton  = createButton("Noclip: OFF", 1)
+local speedButton   = createButton("⚡ Chạy nhanh: OFF", 2)
+local jumpButton    = createButton("🚀 Nhảy cao: OFF", 3)
+local flingButton   = createButton("🌪️ Chạm văng: OFF", 4)
+local expButton     = createButton("💎 Cộng thêm EXP", 5)
+expButton.BackgroundColor3 = Color3.fromRGB(240, 140, 0)
+
+local antiLagButton = createButton("🚀 Giảm Lag (FPS Boost)", 6)
+antiLagButton.BackgroundColor3 = Color3.fromRGB(200, 120, 0)
+
+local playerListContainer = Instance.new("Frame")
+playerListContainer.Name = "PlayerListContainer"
+playerListContainer.Size = UDim2.new(0, 210, 0, 170)
+playerListContainer.BackgroundColor3 = Color3.fromRGB(180, 70, 0)
+playerListContainer.LayoutOrder = 7
+playerListContainer.Parent = scrollFrame
+
+local plcCorner = Instance.new("UICorner")
+plcCorner.CornerRadius = UDim.new(0, 8)
+plcCorner.Parent = playerListContainer
+
+local refreshBtn = Instance.new("TextButton")
+refreshBtn.Name = "RefreshBtn"
+refreshBtn.Size = UDim2.new(1, -10, 0, 25)
+refreshBtn.Position = UDim2.new(0, 5, 0, 5)
+refreshBtn.BackgroundColor3 = Color3.fromRGB(40, 160, 40)
+refreshBtn.Text = "🔄 Làm mới danh sách SV & EXP"
+refreshBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+refreshBtn.TextSize = 11
+refreshBtn.Font = Enum.Font.SourceSansBold
+refreshBtn.Parent = playerListContainer
+
+local rfCorner = Instance.new("UICorner")
+rfCorner.CornerRadius = UDim.new(0, 6)
+rfCorner.Parent = refreshBtn
+
+local playerScroll = Instance.new("ScrollingFrame")
+playerScroll.Name = "PlayerScroll"
+playerScroll.Size = UDim2.new(1, -10, 1, -40)
+playerScroll.Position = UDim2.new(0, 5, 0, 35)
+playerScroll.BackgroundTransparency = 1
+playerScroll.BorderSizePixel = 0
+playerScroll.ScrollBarThickness = 4
+playerScroll.Parent = playerListContainer
+
+local plistLayout = Instance.new("UIListLayout")
+plistLayout.Parent = playerScroll
+plistLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+plistLayout.Padding = UDim.new(0, 4)
+
+plistLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    playerScroll.CanvasSize = UDim2.new(0, 0, 0, plistLayout.AbsoluteContentSize.Y + 5)
+end)
+
+local trackerStatus = Instance.new("TextLabel")
+trackerStatus.Name = "TrackerStatus"
+trackerStatus.Size = UDim2.new(0, 210, 0, 30)
+trackerStatus.BackgroundColor3 = Color3.fromRGB(140, 50, 0)
+trackerStatus.Text = "🎯 Định vị: Chưa chọn ai"
+trackerStatus.TextColor3 = Color3.fromRGB(255, 230, 100)
+trackerStatus.TextSize = 12
+trackerStatus.Font = Enum.Font.SourceSansBold
+trackerStatus.LayoutOrder = 8
+trackerStatus.Parent = scrollFrame
+
+local tsCorner = Instance.new("UICorner")
+tsCorner.CornerRadius = UDim.new(0, 8)
+tsCorner.Parent = trackerStatus
+
+local function getPlayerExp(target)
+    local stats = target:FindFirstChild("leaderstats")
+    if stats then
+        local expNode = stats:FindFirstChild("EXP") 
+                     or stats:FindFirstChild("Exp") 
+                     or stats:FindFirstChild("Experience")
+                     or stats:FindFirstChild("Xp")
+                     or stats:FindFirstChild("Cấp")
+        if expNode then
+            return tostring(expNode.Value)
+        end
+    end
+    return "0"
+end
+
+local function updatePlayerList()
+    for _, item in ipairs(playerScroll:GetChildren()) do
+        if item:IsA("Frame") then
+            item:Destroy()
+        end
+    end
+    
+    for _, targetPlayer in ipairs(Players:GetPlayers()) do
+        if targetPlayer ~= player then
+            local pRow = Instance.new("Frame")
+            pRow.Size = UDim2.new(1, -5, 0, 28)
+            pRow.BackgroundTransparency = 1
+            pRow.Parent = playerScroll
+
+            local pExpVal = getPlayerExp(targetPlayer)
+            local pBtn = Instance.new("TextButton")
+            pBtn.Size = UDim2.new(0, 125, 1, 0)
+            pBtn.BackgroundColor3 = Color3.fromRGB(240, 120, 0)
+            pBtn.Text = "👤 " .. targetPlayer.DisplayName .. " [" .. pExpVal .. "]"
+            pBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            pBtn.TextSize = 10
+            pBtn.Font = Enum.Font.SourceSansBold
+            pBtn.Parent = pRow
+
+            local pCorner = Instance.new("UICorner")
+            pCorner.CornerRadius = UDim.new(0, 4)
+            pCorner.Parent = pBtn
+
+            local lockBtn = Instance.new("TextButton")
+            lockBtn.Size = UDim2.new(0, 70, 1, 0)
+            lockBtn.Position = UDim2.new(0, 130, 0, 0)
+            lockBtn.BackgroundColor3 = Color3.fromRGB(200, 100, 0)
+            lockBtn.Text = "🎯 Định vị"
+            lockBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            lockBtn.TextSize = 11
+            lockBtn.Font = Enum.Font.SourceSansBold
+            lockBtn.Parent = pRow
+
+            local lCorner = Instance.new("UICorner")
+            lCorner.CornerRadius = UDim.new(0, 4)
+            lCorner.Parent = lockBtn
+
+            pBtn.MouseButton1Click:Connect(function()
+                if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                    local myChar = player.Character
+                    if myChar and myChar:FindFirstChild("HumanoidRootPart") then
+                        myChar.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 2)
+                    end
+                end
+            end)
+
+            lockBtn.MouseButton1Click:Connect(function()
+                if trackedTarget == targetPlayer then
+                    trackedTarget = nil
+                    lockBtn.BackgroundColor3 = Color3.fromRGB(200, 100, 0)
+                    lockBtn.Text = "🎯 Định vị"
+                    trackerStatus.Text = "🎯 Định vị: Đã tắt"
+                else
+                    trackedTarget = targetPlayer
+                    lockBtn.BackgroundColor3 = Color3.fromRGB(40, 180, 40)
+                    lockBtn.Text = "✅ Đang dò"
+                    trackerStatus.Text = "🎯 Đang theo dõi: " .. targetPlayer.Name
+                end
+            end)
+        end
+    end
+end
+
+refreshBtn.MouseButton1Click:Connect(updatePlayerList)
+updatePlayerList()
+
+Players.PlayerAdded:Connect(updatePlayerList)
+Players.PlayerRemoving:Connect(updatePlayerList)
+
+RunService.RenderStepped:Connect(function()
+    if trackedTarget and trackedTarget.Character and trackedTarget.Character:FindFirstChild("HumanoidRootPart") then
+        local myChar = player.Character
+        if myChar and myChar:FindFirstChild("HumanoidRootPart") then
+            local distance = math.floor((myChar.HumanoidRootPart.Position - trackedTarget.Character.HumanoidRootPart.Position).Magnitude)
+            trackerStatus.Text = "🎯 " .. trackedTarget.Name .. " | Cách: " .. distance .. "m"
+            myChar.HumanoidRootPart.CFrame = trackedTarget.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1.5)
+        end
+    end
+end)
+
+local soundInstance = Instance.new("Sound")
+soundInstance.Name = "SolarMenuSound"
+soundInstance.Volume = 1
+soundInstance.Looped = true
+soundInstance.Parent = SoundService
+
+local musicBox = Instance.new("TextBox")
+musicBox.Name = "MusicBox"
+musicBox.Size = UDim2.new(0, 210, 0, 32)
+musicBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+musicBox.PlaceholderText = "Nhập Roblox Sound ID..."
+musicBox.Text = ""
+musicBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+musicBox.TextSize = 12
+musicBox.Font = Enum.Font.SourceSans
+musicBox.LayoutOrder = 9
+musicBox.Parent = scrollFrame
+
+local boxCorner = Instance.new("UICorner")
+boxCorner.CornerRadius = UDim.new(0, 8)
+boxCorner.Parent = musicBox
+
+local playMusicBtn = createButton("🎵 Phát Nhạc", 10)
+playMusicBtn.BackgroundColor3 = Color3.fromRGB(200, 100, 0)
+
+local stopMusicBtn = createButton("⏹️ Dừng Nhạc", 11)
+stopMusicBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+
+playMusicBtn.MouseButton1Click:Connect(function()
+    local input = musicBox.Text:match("%d+")
+    if input then
+        soundInstance:Stop()
+        soundInstance.SoundId = "rbxassetid://" .. input
+        soundInstance:Play()
+        playMusicBtn.Text = "🎵 Đang phát ID: " .. input
+    else
+        musicBox.Text = ""
+        musicBox.PlaceholderText = "⚠️ Vui lòng nhập ID số!"
+    end
+end)
+
+stopMusicBtn.MouseButton1Click:Connect(function()
+    soundInstance:Stop()
+    playMusicBtn.Text = "🎵 Phát Nhạc"
+end)
+
+flingButton.MouseButton1Click:Connect(function()
+    flingEnabled = not flingEnabled
+    if flingEnabled then
+        flingButton.Text = "🌪️ Chạm văng: ON"
+        flingButton.BackgroundColor3 = Color3.fromRGB(40, 180, 40)
+        
+        flingConnection = RunService.Stepped:Connect(function()
+            local character = player.Character
+            if character and character:FindFirstChild("HumanoidRootPart") then
+                local rootPart = character.HumanoidRootPart
+                local angularVelocity = rootPart:FindFirstChild("FlingAngularVelocity")
+                
+                if not angularVelocity then
+                    angularVelocity = Instance.new("BodyAngularVelocity")
+                    angularVelocity.Name = "FlingAngularVelocity"
+                    angularVelocity.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+                    angularVelocity.AngularVelocity = Vector3.new(0, 99999, 0)
+                    angularVelocity.Parent = rootPart
+                end
+            end
+        end)
+    else
+        flingButton.Text = "🌪️ Chạm văng: OFF"
+        flingButton.BackgroundColor3 = Color3.fromRGB(220, 80, 0)
+        if flingConnection then
+            flingConnection:Disconnect()
+            flingConnection = nil
+        end
+        
+        local character = player.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            local rootPart = character.HumanoidRootPart
+            if rootPart:FindFirstChild("FlingAngularVelocity") then
+                rootPart.FlingAngularVelocity:Destroy()
+            end
+        end
+    end
+end)
+
+antiLagButton.MouseButton1Click:Connect(function()
+    if antiLagEnabled then return end
+    antiLagEnabled = true
+    
+    Lighting.GlobalShadows = false
+    Lighting.FogEnd = 9e9
+    
+    for _, v in ipairs(Lighting:GetChildren()) do
+        if v:IsA("PostEffect") then v.Enabled = false end
+    end
+
+    local function optimizeObject(obj)
+        if obj:IsA("BasePart") then
+            obj.Material = Enum.Material.SmoothPlastic
+            obj.CastShadow = false
+        elseif obj:IsA("Decal") or obj:IsA("Texture") then
+            obj.Transparency = 1
+        elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Fire") or obj:IsA("Sparkles") then
+            obj.Enabled = false
+        end
+    end
+
+    for _, v in ipairs(game.Workspace:GetDescendants()) do optimizeObject(v) end
+    game.Workspace.DescendantAdded:Connect(function(v)
+        if antiLagEnabled then optimizeObject(v) end
+    end)
+
+    antiLagButton.Text = "🚀 Đã Giảm Lag! (ON)"
+    antiLagButton.BackgroundColor3 = Color3.fromRGB(40, 180, 40)
+end)
+
+closeBtn.MouseButton1Click:Connect(function()
+    if noclipConnection then noclipConnection:Disconnect() end
+    if flingConnection then flingConnection:Disconnect() end
+    trackedTarget = nil
+    soundInstance:Stop()
+    soundInstance:Destroy()
+    
+    local character = player.Character
+    if character and character:FindFirstChildOfClass("Humanoid") then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        humanoid.WalkSpeed = NORMAL_SPEED
+        humanoid.JumpPower = NORMAL_JUMP
+    end
+    
+    screenGui:Destroy()
+end)
+
+noclipButton.MouseButton1Click:Connect(function()
+    noclipEnabled = not noclipEnabled
+    if noclipEnabled then
+        noclipButton.Text = "Noclip: ON"
+        noclipButton.BackgroundColor3 = Color3.fromRGB(40, 180, 40)
+        noclipConnection = RunService.Stepped:Connect(function()
+            local character = player.Character
+            if character then
+                for _, part in ipairs(character:GetDescendants()) do
+                    if part:IsA("BasePart") then part.CanCollide = false end
+                end
+            end
+        end)
+    else
+        noclipButton.Text = "Noclip: OFF"
+        noclipButton.BackgroundColor3 = Color3.fromRGB(220, 80, 0)
+        if noclipConnection then
+            noclipConnection:Disconnect()
+            noclipConnection = nil
+        end
+        local character = player.Character
+        if character then
+            for _, part in ipairs(character:GetDescendants()) do
+                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                    part.CanCollide = true
+                end
+            end
+        end
+    end
+end)
+
+speedButton.MouseButton1Click:Connect(function()
+    speedEnabled = not speedEnabled
+    local character = player.Character
+    if character and character:FindFirstChildOfClass("Humanoid") then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if speedEnabled then
+            humanoid.WalkSpeed = FAST_SPEED
+            speedButton.Text = "⚡ Chạy nhanh: ON"
+            speedButton.BackgroundColor3 = Color3.fromRGB(40, 180, 40)
+        else
+            humanoid.WalkSpeed = NORMAL_SPEED
+            speedButton.Text = "⚡ Chạy nhanh: OFF"
+            speedButton.BackgroundColor3 = Color3.fromRGB(220, 80, 0)
+        end
+    end
+end)
+
+jumpButton.MouseButton1Click:Connect(function()
+    jumpEnabled = not jumpEnabled
+    local character = player.Character
+    if character and character:FindFirstChildOfClass("Humanoid") then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        humanoid.UseJumpPower = true
+        if jumpEnabled then
+            humanoid.JumpPower = HIGH_JUMP
+            jumpButton.Text = "🚀 Nhảy cao: ON"
+            jumpButton.BackgroundColor3 = Color3.fromRGB(40, 180, 40)
+        else
+            humanoid.JumpPower = NORMAL_JUMP
+            jumpButton.Text = "🚀 Nhảy cao: OFF"
+            jumpButton.BackgroundColor3 = Color3.fromRGB(220, 80, 0)
+        end
+    end
+end)
+
+player.CharacterAdded:Connect(function` character)
+    local humanoid = character:WaitForChild("Humanoid")
+    if speedEnabled then humanoid.WalkSpeed = FAST_SPEED end
+    if jumpEnabled then 
+        humanoid.UseJumpPower = true
+        humanoid.JumpPower = HIGH_JUMP 
+    end
+end)
+
+expButton.MouseButton1Click:Connect(function()
+    local leaderstats = player:FindFirstChild("leaderstats")
+    if leaderstats then
+        local expStat = leaderstats:FindFirstChild("EXP") 
+                     or leaderstats:FindFirstChild("Exp") 
+                     or leaderstats:FindFirstChild("Experience")
+                     or leaderstats:FindFirstChild("Xp")
+                     or leaderstats:FindFirstChild("Cấp")
+        if expStat then
+            expStat.Value = expStat.Value + EXP_AMOUNT
+            print("Đã cộng thêm " + EXP_AMOUNT + " EXP!")
+        else
+            warn("Không tìm thấy biến 'EXP' trong leaderstats!")
+        end
+    else
+        warn("Không tìm thấy thư mục 'leaderstats' của người chơi!")
+    end
+end)
